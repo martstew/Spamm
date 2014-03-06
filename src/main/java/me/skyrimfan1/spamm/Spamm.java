@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import me.skyrimfan1.spamm.command.SpammCommand;
+import me.skyrimfan1.spamm.exceptions.SpamCountRegistrationException;
 import me.skyrimfan1.spamm.files.SpammLogFile;
 import me.skyrimfan1.spamm.handler.SpammHandler;
 import me.skyrimfan1.spamm.handler.SpammProcessor;
 import me.skyrimfan1.spamm.listener.SpammUniversalListener;
-import me.skyrimfan1.spamm.listener.exceptions.SpamCountRegistrationException;
 import me.skyrimfan1.spamm.util.Metrics;
 import me.skyrimfan1.spamm.util.Updater;
 import me.skyrimfan1.spamm.util.Updater.UpdateResult;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.skyrimfan1.spamm.Spamm;
-import me.skyrimfan1.spamm.listener.exceptions.NoTrackerFoundException;
+import me.skyrimfan1.spamm.exceptions.NoTrackerFoundException;
 import me.skyrimfan1.spamm.util.SpammLevel;
 
 import org.bukkit.entity.Player;
@@ -36,9 +36,7 @@ public class SpammHandler {
 		try {
 			SpammTracker tracker = getTracker(player);
 			SpammLevel level = tracker.logMessage(message);
-			if (player.hasPermission("spamm.exempt") == false) {
-				Spamm.getInstance().getSpamProcessor().assess(player, level);
-			}
+			Spamm.getInstance().getSpamProcessor().assess(player, level);
 			return level;
 		} catch (NoTrackerFoundException e) {
 			Spamm.getInstance().log.severe(e.mishap);

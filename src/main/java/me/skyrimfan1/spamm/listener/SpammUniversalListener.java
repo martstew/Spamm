@@ -1,6 +1,11 @@
 package me.skyrimfan1.spamm.listener;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import me.skyrimfan1.spamm.Spamm;
+import me.skyrimfan1.spamm.callable.SpammQueriedCallable;
+import me.skyrimfan1.spamm.exceptions.AsyncCallableException;
 import me.skyrimfan1.spamm.util.SpammLevel;
 import me.skyrimfan1.spamm.util.SpammMessaging;
 
@@ -16,25 +21,36 @@ public class SpammUniversalListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent event) {
-		SpammLevel level = Spamm.getInstance().getSpamHandler().log(event.getPlayer(), event.getMessage());
 		if (event.getPlayer().hasPermission("spamm.exempt")) {
 			return;
 		}
-		if (level == SpammLevel.WARNING) {
-			event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.AQUA+"Stop spamming! You will be punished.");
+		if (event.isAsynchronous()) {
+			SpammQueriedCallable callable = new SpammQueriedCallable(event.getPlayer(), event.getMessage());
+			Future<Object> future = Spamm.getInstance().getServer().getScheduler().callSyncMethod(Spamm.getInstance(), callable);
+			try {
+				SpammLevel level = (SpammLevel) future.get(0, TimeUnit.MILLISECONDS);
+				if (level == SpammLevel.WARNING) {
+					event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
+				}
+				else if (level == SpammLevel.PUNISHING) {
+					event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily for persistent spamming.");
+					event.setCancelled(true);
+				}
+			} catch (Exception e) {
+				throw new AsyncCallableException(e);
+			}
+
 		}
-		else if (level == SpammLevel.PUNISHING) {
-			event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily. No one can hear you!");
-			event.setCancelled(true);
+		else {
+			SpammLevel level = Spamm.getInstance().getSpamHandler().log(event.getPlayer(), event.getMessage());
+			if (level == SpammLevel.WARNING) {
+				event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
+			}
+			else if (level == SpammLevel.PUNISHING) {
+				event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily for persistent spamming.");
+				event.setCancelled(true);
+			}
 		}
-		/* Debug stuffs
-		try {
-			SpammTracker track = Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer());
-			event.getPlayer().sendMessage(""+track.getCount());
-		} catch (NoTrackerFoundException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 	
 	@EventHandler
