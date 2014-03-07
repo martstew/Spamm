@@ -3,11 +3,13 @@ package me.skyrimfan1.spamm.listener;
 import java.util.concurrent.Future;
 
 import me.skyrimfan1.spamm.Spamm;
+import me.skyrimfan1.spamm.api.events.PlayerSpamEvent;
 import me.skyrimfan1.spamm.callable.SpammQueriedCallable;
 import me.skyrimfan1.spamm.exceptions.AsyncCallableException;
 import me.skyrimfan1.spamm.util.SpammLevel;
 import me.skyrimfan1.spamm.util.SpammMessaging;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,10 +32,14 @@ public class SpammUniversalListener implements Listener {
 				SpammLevel level = (SpammLevel) future.get();
 				if (level == SpammLevel.WARNING) {
 					event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
+					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level);
+					Bukkit.getPluginManager().callEvent(spamEvent);
 				}
 				else if (level == SpammLevel.PUNISHING) {
 					event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily for persistent spamming.");
 					event.setCancelled(true);
+					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level);
+					Bukkit.getPluginManager().callEvent(spamEvent);
 				}
 			} catch (Exception e) {
 				throw new AsyncCallableException(e);
