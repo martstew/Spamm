@@ -10,6 +10,9 @@ permissions:
   spamm.exempt:
     description: Allows a user to bypass Spamm
     default: op
+  spamm.update:
+    description: Allows an admin (or player) to update Spamm
+    default: op
 
 
   
