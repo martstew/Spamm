@@ -24,6 +24,7 @@ public class Spamm extends JavaPlugin{
 	private SpammProcessor processor;
 	private SpammUniversalListener listener;
 	private Metrics metrics;
+	private boolean isUpdatable;
 	
 	@Override
 	public void onEnable(){
@@ -64,21 +65,32 @@ public class Spamm extends JavaPlugin{
 		return logFile;
 	}
 	
+	public File getJavaFile() {
+		return this.getFile();
+	}
+	
 	private void update(){
 		Updater updater = new Updater(this, 75425, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
 		if (updater.getResult() == UpdateResult.SUCCESS) {
 			if (shouldUpdate()) {
-				new Updater(this, 75425, this.getFile(), Updater.UpdateType.NO_VERSION_CHECK, true);
+				new Updater(this, 75425, this.getJavaFile(), Updater.UpdateType.NO_VERSION_CHECK, true);
 				this.log.info("[Spamm] Automatically downloaded latest version: "+updater.getLatestName());
+				this.isUpdatable = false;
 			}
 			else {
 				this.log.warning("[Spamm] An updated version was found: "+updater.getLatestName());
 				this.log.warning("[Spamm] To download it, use the command: /spamm update");
+				this.isUpdatable = true;
 			}
 		}
 		else {
 			this.log.severe("[Spamm] Ignored updater due to complications.");
+			this.isUpdatable = false;
 		}
+	}
+	
+	public boolean isUpdatable(){
+		return this.isUpdatable;
 	}
 	
 	private void metrics(){

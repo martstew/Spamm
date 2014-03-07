@@ -16,7 +16,7 @@ public class SpammCommand implements CommandExecutor {
 		if (cmd.getName().equalsIgnoreCase("spamm")) {
 			int argslength = args.length;
 			if (argslength == 0) {
-				sender.sendMessage(ChatColor.WHITE+""+ChatColor.STRIKETHROUGH+"          "+SpammMessaging.getPrefix()+ChatColor.WHITE+""+ChatColor.STRIKETHROUGH+"          ");
+				sender.sendMessage(ChatColor.WHITE+""+ChatColor.STRIKETHROUGH+"          "+ChatColor.RESET+" "+SpammMessaging.getPrefix()+ChatColor.WHITE+""+ChatColor.STRIKETHROUGH+"          ");
 				sender.sendMessage(ChatColor.GOLD+"Goal: "+ChatColor.GRAY+"Lightweight spam-catching plugin");
 				sender.sendMessage(ChatColor.GOLD+"Version: "+ChatColor.GRAY+Spamm.getInstance().getDescription().getVersion());
 				sender.sendMessage(ChatColor.GOLD+"Authors: "+ChatColor.GRAY+Spamm.getInstance().getDescription().getAuthors());
@@ -39,15 +39,25 @@ public class SpammCommand implements CommandExecutor {
 						}
 					}
 					else {
-						sender.sendMessage("Unknown command. Type \"/help\" for help.");
+						sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+"/spamm "+ChatColor.RED+" instead");
 					}
 				}
 				else {
-					sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+" /spamm (update)"+ChatColor.RED+" instead");
+					if (sender.hasPermission("spamm.update")) {
+						sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+"/spamm (update)"+ChatColor.RED+" instead");
+					}
+					else {
+						sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+"/spamm "+ChatColor.RED+" instead");
+					}
 				}
 			}
 			else {
-				sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+" /spamm (update)"+ChatColor.RED+" instead");
+				if (sender.hasPermission("spamm.update")) {
+					sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+"/spamm (update)"+ChatColor.RED+" instead");
+				}
+				else {
+					sender.sendMessage(ChatColor.RED+"Try: "+ChatColor.YELLOW+"/spamm "+ChatColor.RED+" instead");
+				}
 			}
 		}
 		return false;
