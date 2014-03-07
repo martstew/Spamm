@@ -25,6 +25,13 @@ public class SpammTracker {
 		return player;
 	}
 	
+	/**
+	 * Logs a message
+	 * Usually only Spamm handles this but can be externally used
+	 * 
+	 * @param last The last message a player said
+	 * @return Their current SpammLevel with the latest string inputted
+	 */
 	public SpammLevel logMessage(String last) {
 		if (task != null)
 			task.cancel();
@@ -56,6 +63,10 @@ public class SpammTracker {
 		return level;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String getLastMessage() {
 		return lastMessage;
 	}

@@ -1,7 +1,6 @@
 package me.skyrimfan1.spamm.listener;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import me.skyrimfan1.spamm.Spamm;
 import me.skyrimfan1.spamm.callable.SpammQueriedCallable;
@@ -28,7 +27,7 @@ public class SpammUniversalListener implements Listener {
 			SpammQueriedCallable callable = new SpammQueriedCallable(event.getPlayer(), event.getMessage());
 			Future<Object> future = Spamm.getInstance().getServer().getScheduler().callSyncMethod(Spamm.getInstance(), callable);
 			try {
-				SpammLevel level = (SpammLevel) future.get(0, TimeUnit.MILLISECONDS);
+				SpammLevel level = (SpammLevel) future.get();
 				if (level == SpammLevel.WARNING) {
 					event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
 				}
