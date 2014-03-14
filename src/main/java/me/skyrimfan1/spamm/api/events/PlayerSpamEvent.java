@@ -11,6 +11,7 @@ public class PlayerSpamEvent extends PlayerEvent {
 	private static HandlerList handlers = new HandlerList();
 	private int count;
 	private SpammLevel level;
+	private String message;
 	
 	/**
 	 * Called when a player spams (either at level WARNING or PUNISHING)
@@ -19,10 +20,11 @@ public class PlayerSpamEvent extends PlayerEvent {
 	 * @param spamCount Their current spam count (messages in a row)
 	 * @param level Their current level (either at level WARNING or PUNISHING)
 	 */
-	public PlayerSpamEvent(Player who, int spamCount, SpammLevel level) {
+	public PlayerSpamEvent(Player who, int spamCount, SpammLevel level, String message) {
 		super(who);
 		this.count = spamCount;
 		this.level = level;
+		this.message = message;
 	}
 	
 	@Override
@@ -40,6 +42,10 @@ public class PlayerSpamEvent extends PlayerEvent {
 	
 	public SpammLevel getLevel(){
 		return level;
+	}
+	
+	public String getMessage(){
+		return message;
 	}
 
 }

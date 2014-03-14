@@ -26,7 +26,7 @@ public class SpammQueriedCallable implements Callable<Object> {
 	 */
 	@Override
 	public SpammLevel call() {
-		SpammLevel level = Spamm.getInstance().getSpamHandler().logAsync(player, message);
+		SpammLevel level = Spamm.getInstance().getSpamHandler().log(player, message);
 		return level;
 	}
 

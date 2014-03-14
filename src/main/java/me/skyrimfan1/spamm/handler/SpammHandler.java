@@ -36,19 +36,9 @@ public class SpammHandler {
 		try {
 			SpammTracker tracker = getTracker(player);
 			SpammLevel level = tracker.logMessage(message);
-			Spamm.getInstance().getSpamProcessor().assess(player, level);
-			return level;
-		} catch (NoTrackerFoundException e) {
-			Spamm.getInstance().log.severe(e.mishap);
-			return null;
-		}
-	}
-	
-	public SpammLevel logAsync(Player player, String message) {
-		try {
-			SpammTracker tracker = getTracker(player);
-			SpammLevel level = tracker.logMessage(message);
-			Spamm.getInstance().getSpamProcessor().assess(player, level);
+			if (player.hasPermission("spamm.exempt") == false) {
+				Spamm.getInstance().getSpamProcessor().assess(player, level);
+			}
 			return level;
 		} catch (NoTrackerFoundException e) {
 			Spamm.getInstance().log.severe(e.mishap);

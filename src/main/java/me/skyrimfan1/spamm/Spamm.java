@@ -15,6 +15,7 @@ import me.skyrimfan1.spamm.util.Updater;
 import me.skyrimfan1.spamm.util.Updater.UpdateResult;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Spamm extends JavaPlugin{
@@ -38,10 +39,12 @@ public class Spamm extends JavaPlugin{
 		doListener();
 		doCommands();
 		this.log.info("[Spamm] So, I hear you don't like to ... spammmmmm?");
+		trackCurrent();
 	}
 	
 	@Override
 	public void onDisable(){
+		getServer().getScheduler().cancelTasks(this);
 		this.log.info("[Spamm] Laters!");
 		this.log.info("[Spamm] Laters!");
 		this.log.info("[Spamm] Laters!");
@@ -67,6 +70,12 @@ public class Spamm extends JavaPlugin{
 	
 	public File getJavaFile() {
 		return this.getFile();
+	}
+	
+	private void trackCurrent() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Spamm.getInstance().getSpamHandler().track(p);
+		}
 	}
 	
 	private void update(){

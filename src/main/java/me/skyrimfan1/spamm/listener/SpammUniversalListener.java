@@ -6,6 +6,7 @@ import me.skyrimfan1.spamm.Spamm;
 import me.skyrimfan1.spamm.api.events.PlayerSpamEvent;
 import me.skyrimfan1.spamm.callable.SpammQueriedCallable;
 import me.skyrimfan1.spamm.exceptions.AsyncCallableException;
+import me.skyrimfan1.spamm.exceptions.NoTrackerFoundException;
 import me.skyrimfan1.spamm.util.SpammLevel;
 import me.skyrimfan1.spamm.util.SpammMessaging;
 
@@ -21,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class SpammUniversalListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onChat(AsyncPlayerChatEvent event) {
+	public void onChat(final AsyncPlayerChatEvent event) {
 		if (event.getPlayer().hasPermission("spamm.exempt")) {
 			return;
 		}
@@ -31,15 +32,20 @@ public class SpammUniversalListener implements Listener {
 			try {
 				SpammLevel level = (SpammLevel) future.get();
 				if (level == SpammLevel.WARNING) {
-					event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
-					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level);
+					event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.RED+"Message ("+Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getLastMessage()+ChatColor.RED+") spammed: "+ChatColor.DARK_GREEN+Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount()+" times");
+					event.setMessage(ChatColor.RESET+""+ChatColor.STRIKETHROUGH+ChatColor.stripColor(event.getMessage()));
+					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level, event.getMessage());
 					Bukkit.getPluginManager().callEvent(spamEvent);
 				}
 				else if (level == SpammLevel.PUNISHING) {
 					event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily for persistent spamming.");
 					event.setCancelled(true);
-					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level);
+					PlayerSpamEvent spamEvent = new PlayerSpamEvent(event.getPlayer(), Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount(), level, event.getMessage());
 					Bukkit.getPluginManager().callEvent(spamEvent);
+				}
+			} catch (NoTrackerFoundException ex) {
+				if (event.getPlayer().isOnline()) {
+					Spamm.getInstance().log.severe("Unable to locate "+event.getPlayer().getName()+"'s tracker.");
 				}
 			} catch (Exception e) {
 				throw new AsyncCallableException(e);
@@ -49,7 +55,14 @@ public class SpammUniversalListener implements Listener {
 		else {
 			SpammLevel level = Spamm.getInstance().getSpamHandler().log(event.getPlayer(), event.getMessage());
 			if (level == SpammLevel.WARNING) {
-				event.setMessage(ChatColor.STRIKETHROUGH+event.getMessage());
+				try {
+					event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.RED+"Message ("+Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getLastMessage()+ChatColor.RED+") spammed: "+ChatColor.DARK_GREEN+Spamm.getInstance().getSpamHandler().getTracker(event.getPlayer()).getCount()+" times");
+				} catch (NoTrackerFoundException e) {
+					if (event.getPlayer().isOnline()) {
+						Spamm.getInstance().log.severe("Unable to locate "+event.getPlayer().getName()+"'s tracker.");
+					}
+				}
+				event.setMessage(ChatColor.RESET+""+ChatColor.STRIKETHROUGH+ChatColor.stripColor(event.getMessage()));
 			}
 			else if (level == SpammLevel.PUNISHING) {
 				event.getPlayer().sendMessage(SpammMessaging.getPrefix()+ChatColor.DARK_RED+"Muted temporarily for persistent spamming.");
