@@ -22,19 +22,19 @@ update: true
 #If set to false, it will ignore the updater
 #Downloads can still be manually triggered via /spamm update
 
-download: false
+download: true
 #If set to true, when a new Spamm version is released, it will either download it
 #If set to false, Spamm will notify you of the update but do nothing
 #The update node (above) must be on for this to have any effect!!!
 
-metrics: true
+metrics: false
 #If set to true, will send plugin stats to MCStats.org
 #NOTE: This does not keep track of confidential information, only plugin-related info
 
 count:
   warning: 3
   #How many times you can spam before being warned
-  punishment: 7
+  punishment: 6
   #How many times you can spam before being punished
 
 punishments:
