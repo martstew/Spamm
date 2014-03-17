@@ -29,8 +29,6 @@ public class Spamm extends JavaPlugin{
 	
 	@Override
 	public void onEnable(){
-		update();
-		metrics();
 		handler = new SpammHandler();
 		processor = new SpammProcessor();
 		logFile = new SpammLogFile(new File(getDataFolder(), "spamlog.txt"));
@@ -38,6 +36,20 @@ public class Spamm extends JavaPlugin{
 		doConfig();
 		doListener();
 		doCommands();
+		metrics();
+		if (shouldUpdate()) {
+			getServer().getScheduler().runTaskLaterAsynchronously(getInstance(), new Runnable(){
+
+				@Override
+				public void run() {
+					update();
+				}
+				
+			}, 0);
+		}
+		else {
+			this.log.info("[Spamm] Did not search for an update.");
+		}
 		this.log.info("[Spamm] So, I hear you don't like to ... spammmmmm?");
 		trackCurrent();
 	}
@@ -81,7 +93,7 @@ public class Spamm extends JavaPlugin{
 	private void update(){
 		Updater updater = new Updater(this, 75425, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
 		if (updater.getResult() == UpdateResult.SUCCESS) {
-			if (shouldUpdate()) {
+			if (shouldDownload()) {
 				new Updater(this, 75425, this.getJavaFile(), Updater.UpdateType.NO_VERSION_CHECK, true);
 				this.log.info("[Spamm] Automatically downloaded latest version: "+updater.getLatestName());
 				this.isUpdatable = false;
@@ -163,6 +175,10 @@ public class Spamm extends JavaPlugin{
 	
 	public boolean shouldUpdate(){
 		return getConfig().getBoolean("update");
+	}
+	
+	public boolean shouldDownload(){
+		return getConfig().getBoolean("download");
 	}
 	
 	private boolean shouldMetricize(){

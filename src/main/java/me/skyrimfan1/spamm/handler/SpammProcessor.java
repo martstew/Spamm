@@ -21,11 +21,11 @@ public class SpammProcessor {
 	}
 	
 	private void loadInternally(){
-		if (Spamm.getInstance().getConfig().getBoolean("punishments.kick")) {
-			load(new KickPunishment());
-		}
 		if (Spamm.getInstance().getConfig().getBoolean("punishments.ban")) {
 			load(new BanPunishment());
+		}
+		if (Spamm.getInstance().getConfig().getBoolean("punishments.kick")) {
+			load(new KickPunishment());
 		}
 	}
 	
@@ -37,22 +37,23 @@ public class SpammProcessor {
 		load(punishment);
 	}
 	
-	public void assess(Player player, SpammLevel level) {
-		if (player.hasPermission("spamm.exempt")) {
-			return;
+	public void unloadExternally(SpammPunishment punishment) {
+		List<SpammPunishment> punish = new ArrayList<SpammPunishment>();
+		for (SpammPunishment sp : punishments) {
+			if (sp.getClass().getName() != punishment.getClass().getName())
+				punish.add(sp);
 		}
+		punishments = punish;
+	}
+	
+	public void assess(Player player, SpammLevel level) {
 		write(player, level);
 		if (level == SpammLevel.PUNISHING) {
-			levyPunishments(player);
+			for (SpammPunishment punish : punishments) {
+				punish.execute(player);
+			}
 		}
 	}
-	
-	private void levyPunishments(Player player){
-		for (SpammPunishment punish : punishments) {
-			punish.execute(player);
-		}
-	}
-	
 	
 	private void write(Player player, SpammLevel level) {
 		if (Spamm.getInstance().shouldLog()) {
