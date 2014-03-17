@@ -1,5 +1,5 @@
 ##############################
-#*** [[[ SPAMM CONFIG ]]] ***#
+#*** [[[ SPAMM CONFIG 1.0.1]]] ***#
 ##############################
 
 delay: 40
@@ -17,9 +17,15 @@ log: true
 #File is called spamlog.txt
 
 update: true
-#If set to true, when a new Spamm version is released, it will automatically download it
-#If not, it will notify you of a new version but do nothing
+#If set to true, when a new Spamm version is released, it will either download it or notify you
+#(See the download node for more info)
+#If set to false, it will ignore the updater
 #Downloads can still be manually triggered via /spamm update
+
+download: false
+#If set to true, when a new Spamm version is released, it will either download it
+#If set to false, Spamm will notify you of the update but do nothing
+#The update node (above) must be on for this to have any effect!!!
 
 metrics: true
 #If set to true, will send plugin stats to MCStats.org
